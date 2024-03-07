@@ -1,0 +1,30 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}Your Admin Title{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <!-- Add your custom styles here -->
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/timetable_app/css/custom_admin_styles.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div id="content" class="colMS">
+        <h1>{{ title }}</h1>
+        {% block branding %}
+            <h2 id="site-name"><a href="{% url 'admin:index' %}">Your Site Name</a></h2>
+        {% endblock %}
+        {% block nav-global %}{% endblock %}
+        {% block messages %}
+            {% if messages %}
+                <ul class="messagelist">{% for message in messages %}<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>{% endfor %}</ul>
+            {% endif %}
+        {% endblock %}
+        <div class="container">
+            {% block content_title %}{% endblock %}
+            {% block content %}
+                <!-- Your content goes here -->
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}

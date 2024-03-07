@@ -1,0 +1,21 @@
+<!-- timetable_app/templates/timetable_app/add_slot.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Add Timetable Slot</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <h3>Upload Excel File for Faculty 1</h3>
+        <input type="file" name="faculty1_file">
+
+        <h3>Upload Excel File for Faculty 2</h3>
+        <input type="file" name="faculty2_file">
+
+        <h3>Upload Excel File for Faculty 3</h3>
+        <input type="file" name="faculty3_file">
+
+        <button type="submit">Upload</button>
+    </form>
+{% endblock %}

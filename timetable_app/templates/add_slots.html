@@ -1,0 +1,23 @@
+{% extends 'base_generic.html' %}
+
+{% block title %}Add Timetable Slot{% endblock %}
+
+{% block content %}
+    <div id="content" class="colMS">
+        <h1>{{ title }}</h1>
+
+        <form enctype="multipart/form-data" action="{% url 'timetable_app:add_slot' %}" method="post" id="timetable_form">
+            {% csrf_token %}
+            
+            <!-- File field for Faculty -->
+            {{ form.faculty_file.label_tag }} {{ form.faculty_file }}
+
+            <!-- Other fields if any -->
+            {{ form.as_p }}
+
+            <div class="submit-row">
+                <input type="submit" value="Save" class="default" name="_save">
+            </div>
+        </form>
+    </div>
+{% endblock %}

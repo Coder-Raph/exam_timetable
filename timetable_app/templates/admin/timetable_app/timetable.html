@@ -1,0 +1,32 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Timetable</h1>
+
+  {% if slots %}
+    <table>
+      <thead>
+        <tr>
+          <th>Day</th>
+          <th>Time</th>
+          <th>Course</th>
+          <th>Room</th>
+          <th>Faculty</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for slot in slots %}
+          <tr>
+            <td>{{ slot.day }}</td>
+            <td>{{ slot.time }}</td>
+            <td>{{ slot.course }}</td>
+            <td>{{ slot.room }}</td>
+            <td>{{ slot.faculty }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No timetable slots available.</p>
+  {% endif %}
+{% endblock %}
