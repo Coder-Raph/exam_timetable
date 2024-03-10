@@ -2,6 +2,12 @@
 from django.db import models
 from django.utils import timezone
 
+class CommonCourse(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+
+    def __str__(self):
+        return self.name
 class TimetableSlot(models.Model):
     faculty1_file = models.FileField(upload_to='faculty1/', null=True, blank=True)
     faculty2_file = models.FileField(upload_to='faculty2/', null=True, blank=True)
