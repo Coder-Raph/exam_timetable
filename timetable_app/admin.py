@@ -1,16 +1,16 @@
+# your_app_name/admin.py
 from django.contrib import admin
 from django.urls import path
 from django.shortcuts import render, redirect
-from .models import TimetableSlot, Venue, GeneratedTimetable  # Add the import for GeneratedTimetable
+from .models import TimetableSlot, Venue, GeneratedTimetable
 from .forms import TimetableSlotForm, CommonCourseForm
-from .views import process_excel_file  # Import the process_excel_file function
+from .views import process_excel_file
 
 def generate_timetable(modeladmin, request, queryset):
     for obj in queryset:
         try:
             process_excel_file(obj.faculty1_file, faculty_name=obj.faculty_name)
         except AttributeError:
-            # Handle the case where the object doesn't have the 'faculty_name' attribute
             pass
 
     modeladmin.message_user(request, "Timetable generation complete")
@@ -32,6 +32,7 @@ class GeneratedTimetableAdmin(admin.ModelAdmin):
 
     display_related_slots.short_description = 'Related Timetable Slots'
 
+@admin.register(TimetableSlot)
 class TimetableSlotAdmin(admin.ModelAdmin):
     form = TimetableSlotForm
     actions = [generate_timetable]
@@ -52,9 +53,8 @@ class TimetableSlotAdmin(admin.ModelAdmin):
                 try:
                     process_excel_file(faculty_file, faculty_name=form.cleaned_data['faculty_name'])
                 except AttributeError:
-                    # Handle the case where the form doesn't have the 'faculty_name' attribute
                     pass
-                return redirect('admin:timetable_app_timetableslot_changelist')
+                return redirect('admin:your_app_name_timetableslot_changelist')
 
         else:
             form = TimetableSlotForm()
@@ -68,8 +68,13 @@ class TimetableSlotAdmin(admin.ModelAdmin):
             'has_permission': self.has_add_permission(request),
         }
 
-        return render(request, 'admin/timetable_app/timetableslot/add_timetable_slot.html', context)
+        return render(request, 'admin/your_app_name/timetableslot/add_timetable_slot.html', context)
 
+@admin.register(Venue)
+class VenueAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+    
 # Register your model with the custom admin class
-admin.site.register(TimetableSlot, TimetableSlotAdmin)
-admin.site.register(Venue, VenueAdmin)
+# admin.site.register(TimetableSlot, TimetableSlotAdmin)
+# admin.site.register(Venue, VenueAdmin)

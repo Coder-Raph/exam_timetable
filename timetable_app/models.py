@@ -17,7 +17,7 @@ class Rule(models.Model):
 class Venue(models.Model):
     name = models.CharField(max_length=255)
     capacity = models.PositiveIntegerField(default=100)  # Change 100 to your desired default value
-    rules = models.CharField(max_length=255, null=True, blank=True)
+    rules = models.ManyToManyField(Rule, blank=True)
 
     def __str__(self):
         return self.name
@@ -29,8 +29,9 @@ class TimetableSlot(models.Model):
     duration = models.DurationField(null=True)
     faculty = models.CharField(max_length=255, default='Unknown')
     course_file = models.FileField(upload_to='course_files/', null=True, blank=True)
-    venue = models.ForeignKey(Venue, on_delete=models.CASCADE, null=True, blank=True)
+    venue = models.ForeignKey('Venue', on_delete=models.CASCADE, null=True, blank=True)
     timestamp_field = models.DateTimeField(default=timezone.now)
+    rules = models.ManyToManyField('Rule', blank=True)
 
     def __str__(self):
         return f'{self.day} - {self.duration} - {self.course_file.name} - {self.venue} - {self.faculty}'
