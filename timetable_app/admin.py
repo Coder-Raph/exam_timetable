@@ -1,23 +1,40 @@
 from django.contrib import admin
 from django.urls import path
 from django.shortcuts import render, redirect
-from .models import TimetableSlot
-from .forms import TimetableSlotForm
-from .views import process_excel_file  # Import the function for processing the Excel file
-from .models import CommonCourse
+from .models import TimetableSlot, Venue, GeneratedTimetable  # Add the import for GeneratedTimetable
+from .forms import TimetableSlotForm, CommonCourseForm
+from .views import process_excel_file  # Import the process_excel_file function
 
 def generate_timetable(modeladmin, request, queryset):
     for obj in queryset:
-        # Process the uploaded Excel file for each selected object
-        process_excel_file(obj.file_field, faculty_name=obj.faculty_name)  # Replace with actual field names
+        try:
+            process_excel_file(obj.faculty1_file, faculty_name=obj.faculty_name)
+        except AttributeError:
+            # Handle the case where the object doesn't have the 'faculty_name' attribute
+            pass
+
     modeladmin.message_user(request, "Timetable generation complete")
 
 generate_timetable.short_description = "Generate timetable from uploaded files"
 
-@admin.register(TimetableSlot)
+class VenueAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+
+@admin.register(GeneratedTimetable)
+class GeneratedTimetableAdmin(admin.ModelAdmin):
+    list_display = ('file', 'created_at', 'display_related_slots')
+    readonly_fields = ('file', 'created_at')
+
+    def display_related_slots(self, obj):
+        # Fetch and display related TimetableSlot records
+        slots = TimetableSlot.objects.filter(generated_timetable=obj)
+        return ', '.join([str(slot) for slot in slots])
+
+    display_related_slots.short_description = 'Related Timetable Slots'
+
 class TimetableSlotAdmin(admin.ModelAdmin):
-    actions = [generate_timetable]
     form = TimetableSlotForm
+    actions = [generate_timetable]
 
     def get_urls(self):
         urls = super().get_urls()
@@ -28,21 +45,19 @@ class TimetableSlotAdmin(admin.ModelAdmin):
 
     def add_timetable_slot(self, request):
         if request.method == 'POST':
-            form = TimetableUploadForm(request.POST, request.FILES)
+            form = TimetableSlotForm(request.POST, request.FILES)
 
             if form.is_valid():
-                # Retrieve uploaded file
                 faculty_file = request.FILES.get('faculty_file')
-
-                # Process the uploaded Excel file
-                process_excel_file(faculty_file)
-
-                # Redirect back to the Timetable Slot change list after processing
+                try:
+                    process_excel_file(faculty_file, faculty_name=form.cleaned_data['faculty_name'])
+                except AttributeError:
+                    # Handle the case where the form doesn't have the 'faculty_name' attribute
+                    pass
                 return redirect('admin:timetable_app_timetableslot_changelist')
 
         else:
-            # Display the upload form
-            form = TimetableUploadForm()
+            form = TimetableSlotForm()
 
         context = {
             'form': form,
@@ -56,5 +71,5 @@ class TimetableSlotAdmin(admin.ModelAdmin):
         return render(request, 'admin/timetable_app/timetableslot/add_timetable_slot.html', context)
 
 # Register your model with the custom admin class
-admin.site.register(CommonCourse)
-# admin.site.register(TimetableSlot, TimetableSlotAdmin)
+admin.site.register(TimetableSlot, TimetableSlotAdmin)
+admin.site.register(Venue, VenueAdmin)

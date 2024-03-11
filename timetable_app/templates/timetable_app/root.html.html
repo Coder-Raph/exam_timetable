@@ -6,11 +6,9 @@
     <title>Root Page</title>
 </head>
 <body>
-    <h1>Welcome to the Root Page!</h1>
-
-    <!-- Add a download button -->
-    <form action="{% url 'download_timetable_csv' %}" method="get">
-        <button type="submit">Download Timetable CSV</button>
-    </form>
+    <!-- Add a button to trigger the download of the timetable file -->
+    <a href="{% url 'download_timetable_csv' %}" download>
+        <button>Download Timetable</button>
+    </a>
 </body>
 </html>

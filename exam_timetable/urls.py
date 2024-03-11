@@ -15,15 +15,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 # exam_timetable/urls.py
-
 from django.contrib import admin
 from django.urls import path, include
-from timetable_app.views import timetable, add_slot, root_view  # Removed download_timetable_csv
+from timetable_app.views import timetable, TimetableSlotCreateView, download_timetable_csv_view
 
 urlpatterns = [
+    path('download_timetable_csv/', download_timetable_csv_view, name='download_timetable_csv'),
+    path('timetable/', timetable, name='timetable'),
+    path('add_slot/', TimetableSlotCreateView.as_view(), name='add_slot'),
+    path('', timetable),  # Redirect to the timetable view for the empty path
     path('admin/', admin.site.urls),
-    path('timetable/', include('timetable_app.urls')),
-    path('add_slot/', include('timetable_app.urls')),
-    path('root_view/', include('timetable_app.urls')),
-    path('', include('timetable_app.urls')),  # Add this line for the empty path
+
 ]
